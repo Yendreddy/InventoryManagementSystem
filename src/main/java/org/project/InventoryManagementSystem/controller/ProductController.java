@@ -24,13 +24,18 @@ public class ProductController {
         return productService.fetchProductList();
     }
 
+    @GetMapping("products/{id}")
+    public Product getProductById(@PathVariable UUID product_id) {
+        return productService.findProductById(product_id);
+    }
+
     @PutMapping("/products/{id}")
-    public Product updateProduct(@PathVariable("id") UUID productId, @RequestBody Product product){
-        return productService.updateProduct(productId,product);
+    public Product updateProduct(@PathVariable("id") UUID product_id, @RequestBody Product product){
+        return productService.updateProduct(product_id,product);
     }
 
     @DeleteMapping("/products/{id}")
-    public void deleteProductById(@PathVariable("id") UUID productId){
-        productService.deleteCustomerById(productId);
+    public void deleteProductById(@PathVariable("id") UUID product_id){
+        productService.deleteProductById(product_id);
     }
 }

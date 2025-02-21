@@ -10,7 +10,9 @@ public interface ProductService {
 
     List<Product> fetchProductList();
 
-    Product updateProduct(UUID productId, Product product);
+    Product updateProduct(UUID product_id, Product product);
 
-    void deleteCustomerById(UUID productId);
+    void deleteProductById(UUID product_id);
+
+    Product findProductById(UUID product_id);
 }

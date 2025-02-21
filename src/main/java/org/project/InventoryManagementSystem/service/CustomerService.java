@@ -1,6 +1,5 @@
 package org.project.InventoryManagementSystem.service;
 
-import jakarta.validation.Valid;
 import org.project.InventoryManagementSystem.entity.Customer;
 
 import java.util.List;
@@ -12,7 +11,9 @@ public interface CustomerService {
 
     List<Customer> fetchCustomerList();
 
-    Customer updateCustomer(UUID customerId, Customer customer);
+    Customer updateCustomer(UUID customer_id, Customer customer);
 
-    void deleteCustomerById(UUID customerId);
+    void deleteCustomerById(UUID customer_id);
+
+    Customer findCustomerById(UUID customer_id);
 }

@@ -10,7 +10,9 @@ public interface OrdersPlacedService {
 
     OrdersPlaced saveOrder(OrdersPlaced order);
 
-    OrdersPlaced updateOrderById(UUID orderId, OrdersPlaced orders);
+    OrdersPlaced updateOrderById(UUID order_id, OrdersPlaced orders);
 
-    void deleteOrderById(UUID orderId);
+    void deleteOrderById(UUID order_id);
+
+    OrdersPlaced getOrderById(UUID order_id);
 }

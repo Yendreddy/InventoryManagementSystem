@@ -10,7 +10,9 @@ public interface CategoryService {
 
     List<Category> fetchCategoryList();
 
-    Category updateCategoryById(UUID categoryId, Category category);
+    Category updateCategoryById(UUID category_id, Category category);
 
-    void deleteCategoryById(UUID categoryId);
+    void deleteCategoryById(UUID category_id);
+
+    Category findCategoryById(UUID category_id);
 }

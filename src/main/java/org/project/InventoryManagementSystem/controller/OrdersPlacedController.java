@@ -9,34 +9,33 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/orders")
 public class OrdersPlacedController {
 
     @Autowired
     private OrdersPlacedService ordersPlacedService;
 
-    @GetMapping("/orders")
+    @GetMapping("/ordersPlaced")
     public List<OrdersPlaced> getAllOrders() {
         return ordersPlacedService.getAllOrders();
     }
 
-//    @GetMapping("/{id}")
-//    public OrdersPlaced getOrderById(@PathVariable UUID id) {
-//        return ordersPlacedService.getOrderById(id);
-//    }
+    @GetMapping("/ordersPlaced/{id}")
+    public OrdersPlaced getOrderById(@PathVariable("id") UUID order_id) {
+        return ordersPlacedService.getOrderById(order_id);
+    }
 
-    @PostMapping("/orders")
+    @PostMapping("/ordersPlaced")
     public OrdersPlaced saveOrder(@RequestBody OrdersPlaced order) {
         return ordersPlacedService.saveOrder(order);
     }
 
-    @PutMapping("/orders/{id}")
-    public OrdersPlaced updateOrderById(@PathVariable("id") UUID orderId, @RequestBody OrdersPlaced orders) {
-        return ordersPlacedService.updateOrderById(orderId, orders);
+    @PutMapping("/ordersPlaced/{id}")
+    public OrdersPlaced updateOrderById(@PathVariable("id") UUID order_id, @RequestBody OrdersPlaced orders) {
+        return ordersPlacedService.updateOrderById(order_id, orders);
     }
 
-    @DeleteMapping("/orders/{id}")
-    public void deleteOrderById(@PathVariable("id") UUID orderId) {
-        ordersPlacedService.deleteOrderById(orderId);
+    @DeleteMapping("/ordersPlaced/{id}")
+    public void deleteOrderById(@PathVariable("id") UUID order_id) {
+        ordersPlacedService.deleteOrderById(order_id);
     }
 }

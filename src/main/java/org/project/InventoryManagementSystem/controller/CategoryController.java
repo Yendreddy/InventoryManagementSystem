@@ -1,5 +1,6 @@
 package org.project.InventoryManagementSystem.controller;
 
+import org.project.InventoryManagementSystem.dto.CategoryDTO;
 import org.project.InventoryManagementSystem.entity.Category;
 import org.project.InventoryManagementSystem.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +25,18 @@ public class CategoryController {
         return categoryService.fetchCategoryList();
     }
 
+    @GetMapping("/categories/{id}")
+    public Category getCategoryById(@PathVariable("id") UUID category_id) {
+        return categoryService.findCategoryById(category_id);
+    }
+
     @PutMapping("/categories/{id}")
-    public Category updateCategoryById(@PathVariable("id")UUID categoryId, @RequestBody Category category){
-        return categoryService.updateCategoryById(categoryId,category);
+    public Category updateCategoryById(@PathVariable("id")UUID category_id, @RequestBody Category category){
+        return categoryService.updateCategoryById(category_id,category);
     }
 
     @DeleteMapping("/categories/{id}")
-    public void deleteCategoryById(@PathVariable("id")UUID categoryId){
-        categoryService.deleteCategoryById(categoryId);
+    public void deleteCategoryById(@PathVariable("id")UUID category_id){
+        categoryService.deleteCategoryById(category_id);
     }
 }

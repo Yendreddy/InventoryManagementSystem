@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
@@ -14,19 +13,23 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Product implements Serializable {
+public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID product_id;
+    private UUID orderItem_id;
 
-    @Column(nullable = false)
-    private String name;
+    private OrdersPlaced quantity;
 
-    private int price;
-    private int quantity;
+    @ManyToOne
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id")
+    private Product product;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id", referencedColumnName = "order_id")
+    private OrdersPlaced ordersPlaced;
 }

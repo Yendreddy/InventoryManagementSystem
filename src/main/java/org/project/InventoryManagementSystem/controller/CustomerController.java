@@ -23,15 +23,20 @@ public class CustomerController {
     @GetMapping("/customers")
     public List<Customer> fetchCustomerList(){
         return customerService.fetchCustomerList();
+
+    }
+    @GetMapping("/customers/{id}")
+    public Customer getCustomerById(@PathVariable("id") UUID customer_id) {
+        return customerService.findCustomerById(customer_id);
     }
 
     @PutMapping("/customers/{id}")
-    public Customer updateCustomer(@PathVariable("id") UUID customerId, @RequestBody Customer customer){
-        return customerService.updateCustomer(customerId,customer);
+    public Customer updateCustomer(@PathVariable("id") UUID customer_id, @RequestBody Customer customer){
+        return customerService.updateCustomer(customer_id,customer);
     }
 
     @DeleteMapping("/customers/{id}")
-    public void deleteCustomerById(@PathVariable("id") UUID customerId){
-        customerService.deleteCustomerById(customerId);
+    public void deleteCustomerById(@PathVariable("id") UUID customer_id){
+        customerService.deleteCustomerById(customer_id);
     }
 }

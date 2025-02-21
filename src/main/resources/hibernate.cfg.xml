@@ -8,5 +8,10 @@
         <property name="hibernate.connection.password">Employee12</property>
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.hbm2ddl.auto">update</property>
+        <mapping class="org.project.InventoryManagementSystem.entity.Category" />
+        <mapping class="org.project.InventoryManagementSystem.entity.Customer" />
+        <mapping class="org.project.InventoryManagementSystem.entity.OrdersPlaced" />
+        <mapping class="org.project.InventoryManagementSystem.entity.OrderItem" />
+        <mapping class="org.project.InventoryManagementSystem.entity.Product" />
     </session-factory>
 </hibernate-configuration>

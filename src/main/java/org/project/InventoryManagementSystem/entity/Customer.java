@@ -1,12 +1,14 @@
 package org.project.InventoryManagementSystem.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,15 +21,22 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID customerId;
-    private String name;
-    private String phoneNumber;
-    @AttributeOverride(
-            name = "emailId",
-            column = @Column(name = "customer_email_address")
-    )
-    private String emailId;
+    private UUID customer_id;
 
-//    @OneToMany(mappedBy = "customer")
-//    private List<OrdersPlaced> ordersPlaceds;
+    @NotBlank(message = "Name should not be blank")
+    private String name;
+
+    @Pattern(regexp = "\\d{10}", message = "Phone number should be 10 digits")
+    private String phone_number;
+
+    @Email(message = "Email should be valid")
+    private String email_id;
+
+    @OneToMany(
+            mappedBy = "customer",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER
+
+    )
+    private List<OrdersPlaced> ordersPlaceds;
 }
