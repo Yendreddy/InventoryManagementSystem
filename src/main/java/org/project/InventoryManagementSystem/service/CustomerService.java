@@ -1,19 +1,14 @@
 package org.project.InventoryManagementSystem.service;
 
-import org.project.InventoryManagementSystem.entity.Customer;
+import org.project.InventoryManagementSystem.dto.CustomerDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CustomerService {
-
-    Customer saveCustomer( Customer customer);
-
-    List<Customer> fetchCustomerList();
-
-    Customer updateCustomer(UUID customer_id, Customer customer);
-
-    void deleteCustomerById(UUID customer_id);
-
-    Customer findCustomerById(UUID customer_id);
+    boolean saveCustomer(CustomerDTO customerDTO);
+    List<CustomerDTO> fetchCustomerList();
+    CustomerDTO getCustomerById(UUID customer_id);
+    boolean updateCustomer(UUID customer_id, CustomerDTO customerDTO);
+    boolean deleteCustomerById(UUID customer_id);
 }

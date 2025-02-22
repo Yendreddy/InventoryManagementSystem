@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.project.InventoryManagementSystem.dto.CustomerDTO;
 import org.project.InventoryManagementSystem.entity.Customer;
 import org.project.InventoryManagementSystem.exception.CustomerNotFoundException;
 
@@ -28,7 +29,7 @@ public class CustomerServiceImplTest {
     @Mock
     private Session session;
 
-
+    @Mock
     private Transaction transaction;
 
     @InjectMocks
@@ -53,7 +54,7 @@ public class CustomerServiceImplTest {
     public void testGetAllCustomers() {
         when(session.createQuery("FROM Customer", Customer.class).list()).thenReturn(Collections.singletonList(customer));
 
-        List<Customer> customers = customerService.fetchCustomerList();
+        List<CustomerDTO> customers = customerService.fetchCustomerList();
 
         assertNotNull(customers);
         assertEquals(1, customers.size());
@@ -62,28 +63,29 @@ public class CustomerServiceImplTest {
 
     @Test
     public void testSaveCustomer() {
-        Customer savedCustomer = customerService.saveCustomer(customer);
+        boolean isSaved = customerService.saveCustomer(CustomerDTO.builder().build());
 
-        assertNotNull(savedCustomer);
-        verify(session, times(1)).save(customer);
+        assertTrue(isSaved);
+        verify(session, times(1)).save(any(Customer.class));
     }
 
     @Test
     public void testUpdateCustomerById() {
         when(session.get(Customer.class, customer.getCustomer_id())).thenReturn(customer);
 
-        Customer updatedCustomer = customerService.updateCustomer(customer.getCustomer_id(), customer);
+        boolean isUpdated = customerService.updateCustomer(customer.getCustomer_id(), CustomerDTO.builder().build());
 
-        assertNotNull(updatedCustomer);
-        verify(session, times(1)).merge(customer);
+        assertTrue(isUpdated);
+        verify(session, times(1)).merge(any(Customer.class));
     }
 
     @Test
     public void testDeleteCustomerById() {
         when(session.get(Customer.class, customer.getCustomer_id())).thenReturn(customer);
 
-        customerService.deleteCustomerById(customer.getCustomer_id());
+        boolean isDeleted = customerService.deleteCustomerById(customer.getCustomer_id());
 
+        assertTrue(isDeleted);
         verify(session, times(1)).delete(customer);
     }
 
@@ -91,7 +93,7 @@ public class CustomerServiceImplTest {
     public void testGetCustomerById() {
         when(session.get(Customer.class, customer.getCustomer_id())).thenReturn(customer);
 
-        Customer foundCustomer = customerService.findCustomerById(customer.getCustomer_id());
+        CustomerDTO foundCustomer = customerService.getCustomerById(customer.getCustomer_id());
 
         assertNotNull(foundCustomer);
         verify(session, times(1)).get(Customer.class, customer.getCustomer_id());
@@ -101,6 +103,6 @@ public class CustomerServiceImplTest {
     public void testCustomerNotFoundException() {
         when(session.get(Customer.class, customer.getCustomer_id())).thenReturn(null);
 
-        assertThrows(CustomerNotFoundException.class, () -> customerService.findCustomerById(customer.getCustomer_id()));
+        assertThrows(CustomerNotFoundException.class, () -> customerService.getCustomerById(customer.getCustomer_id()));
     }
 }

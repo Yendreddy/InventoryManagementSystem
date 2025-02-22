@@ -1,42 +1,65 @@
 package org.project.InventoryManagementSystem.controller;
 
+import org.modelmapper.ModelMapper;
 import org.project.InventoryManagementSystem.dto.CategoryDTO;
-import org.project.InventoryManagementSystem.entity.Category;
 import org.project.InventoryManagementSystem.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/categories")
 public class CategoryController {
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     private CategoryService categoryService;
 
-    @PostMapping("/categories")
-    public Category saveCategory(@RequestBody Category category){
-        return categoryService.saveCategory(category);
-    }
 
-    @GetMapping("/categories")
-    public List<Category> fetchCategoryList(){
+    @GetMapping
+    public List<CategoryDTO> getAllCategories() {
         return categoryService.fetchCategoryList();
     }
 
-    @GetMapping("/categories/{id}")
-    public Category getCategoryById(@PathVariable("id") UUID category_id) {
-        return categoryService.findCategoryById(category_id);
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryDTO> findCategoryById(@PathVariable("id") UUID category_id) {
+        CategoryDTO categoryDTO = categoryService.findCategoryById(category_id);
+        return ResponseEntity.ok().body(categoryDTO);
     }
 
-    @PutMapping("/categories/{id}")
-    public Category updateCategoryById(@PathVariable("id")UUID category_id, @RequestBody Category category){
-        return categoryService.updateCategoryById(category_id,category);
+    @PostMapping
+    public ResponseEntity<CategoryDTO> saveCategory(@RequestBody CategoryDTO categoryDTO) {
+        boolean isCreated = categoryService.saveCategory(categoryDTO);
+        if (isCreated) {
+            return new ResponseEntity<>(categoryDTO, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @DeleteMapping("/categories/{id}")
-    public void deleteCategoryById(@PathVariable("id")UUID category_id){
-        categoryService.deleteCategoryById(category_id);
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoryDTO> updateCategoryById(@PathVariable("id") UUID category_id, @RequestBody CategoryDTO categoryDTO) {
+        boolean isUpdated = categoryService.updateCategoryById(category_id, categoryDTO);
+        if (isUpdated) {
+            return ResponseEntity.ok().body(categoryDTO);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategoryById(@PathVariable("id") UUID category_id) {
+        boolean isDeleted = categoryService.deleteCategoryById(category_id);
+        if (isDeleted) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

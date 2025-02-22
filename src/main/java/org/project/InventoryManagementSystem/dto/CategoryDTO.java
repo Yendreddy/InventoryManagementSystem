@@ -13,6 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class CategoryDTO {
-    private UUID categoryId;
+    private UUID category_id;
     private String name;
 }

@@ -1,41 +1,64 @@
 package org.project.InventoryManagementSystem.controller;
 
-import org.project.InventoryManagementSystem.entity.OrdersPlaced;
+import org.modelmapper.ModelMapper;
+import org.project.InventoryManagementSystem.dto.OrdersPlacedDTO;
 import org.project.InventoryManagementSystem.service.OrdersPlacedService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/orders")
 public class OrdersPlacedController {
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     private OrdersPlacedService ordersPlacedService;
 
-    @GetMapping("/ordersPlaced")
-    public List<OrdersPlaced> getAllOrders() {
+    @GetMapping
+    public List<OrdersPlacedDTO> getAllOrders() {
         return ordersPlacedService.getAllOrders();
     }
 
-    @GetMapping("/ordersPlaced/{id}")
-    public OrdersPlaced getOrderById(@PathVariable("id") UUID order_id) {
-        return ordersPlacedService.getOrderById(order_id);
+    @GetMapping("/{id}")
+    public ResponseEntity<OrdersPlacedDTO> getOrderById(@PathVariable("id") UUID order_id) {
+        OrdersPlacedDTO ordersPlacedDTO = ordersPlacedService.getOrderById(order_id);
+        return ResponseEntity.ok().body(ordersPlacedDTO);
     }
 
-    @PostMapping("/ordersPlaced")
-    public OrdersPlaced saveOrder(@RequestBody OrdersPlaced order) {
-        return ordersPlacedService.saveOrder(order);
+    @PostMapping
+    public ResponseEntity<OrdersPlacedDTO> saveOrder(@RequestBody OrdersPlacedDTO ordersPlacedDTO) {
+        boolean isCreated = ordersPlacedService.saveOrder(ordersPlacedDTO);
+        if (isCreated) {
+            return new ResponseEntity<>(ordersPlacedDTO, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @PutMapping("/ordersPlaced/{id}")
-    public OrdersPlaced updateOrderById(@PathVariable("id") UUID order_id, @RequestBody OrdersPlaced orders) {
-        return ordersPlacedService.updateOrderById(order_id, orders);
+    @PutMapping("/{id}")
+    public ResponseEntity<OrdersPlacedDTO> updateOrderById(@PathVariable("id") UUID order_id, @RequestBody OrdersPlacedDTO ordersPlacedDTO) {
+        boolean isUpdated = ordersPlacedService.updateOrderById(order_id, ordersPlacedDTO);
+        if (isUpdated) {
+            return ResponseEntity.ok().body(ordersPlacedDTO);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @DeleteMapping("/ordersPlaced/{id}")
-    public void deleteOrderById(@PathVariable("id") UUID order_id) {
-        ordersPlacedService.deleteOrderById(order_id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrderById(@PathVariable("id") UUID order_id) {
+        boolean isDeleted = ordersPlacedService.deleteOrderById(order_id);
+        if (isDeleted) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

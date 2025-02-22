@@ -1,18 +1,14 @@
 package org.project.InventoryManagementSystem.service;
 
-import org.project.InventoryManagementSystem.entity.OrdersPlaced;
+import org.project.InventoryManagementSystem.dto.OrdersPlacedDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface OrdersPlacedService {
-    List<OrdersPlaced> getAllOrders();
-
-    OrdersPlaced saveOrder(OrdersPlaced order);
-
-    OrdersPlaced updateOrderById(UUID order_id, OrdersPlaced orders);
-
-    void deleteOrderById(UUID order_id);
-
-    OrdersPlaced getOrderById(UUID order_id);
+    List<OrdersPlacedDTO> getAllOrders();
+    OrdersPlacedDTO getOrderById(UUID order_id);
+    boolean saveOrder(OrdersPlacedDTO ordersPlacedDTO);
+    boolean updateOrderById(UUID order_id, OrdersPlacedDTO ordersPlacedDTO);
+    boolean deleteOrderById(UUID order_id);
 }

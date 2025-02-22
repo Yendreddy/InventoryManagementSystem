@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.project.InventoryManagementSystem.dto.ProductDTO;
 import org.project.InventoryManagementSystem.entity.Product;
 import org.project.InventoryManagementSystem.exception.ProductNotFoundException;
 
@@ -53,7 +54,7 @@ public class ProductServiceImplTest {
     public void testGetAllProducts() {
         when(session.createQuery("FROM Product", Product.class).list()).thenReturn(Collections.singletonList(product));
 
-        List<Product> products = productService.fetchProductList();
+        List<ProductDTO> products = productService.fetchProductList();
 
         assertNotNull(products);
         assertEquals(1, products.size());
@@ -62,28 +63,29 @@ public class ProductServiceImplTest {
 
     @Test
     public void testSaveProduct() {
-        Product savedProduct = productService.saveProduct(product);
+        boolean isSaved = productService.saveProduct(ProductDTO.builder().build());
 
-        assertNotNull(savedProduct);
-        verify(session, times(1)).save(product);
+        assertTrue(isSaved);
+        verify(session, times(1)).save(any(Product.class));
     }
 
     @Test
     public void testUpdateProductById() {
         when(session.get(Product.class, product.getProduct_id())).thenReturn(product);
 
-        Product updatedProduct = productService.updateProduct(product.getProduct_id(), product);
+        boolean isUpdated = productService.updateProduct(product.getProduct_id(), ProductDTO.builder().build());
 
-        assertNotNull(updatedProduct);
-        verify(session, times(1)).merge(product);
+        assertTrue(isUpdated);
+        verify(session, times(1)).merge(any(Product.class));
     }
 
     @Test
     public void testDeleteProductById() {
         when(session.get(Product.class, product.getProduct_id())).thenReturn(product);
 
-        productService.deleteProductById(product.getProduct_id());
+        boolean isDeleted = productService.deleteProductById(product.getProduct_id());
 
+        assertTrue(isDeleted);
         verify(session, times(1)).delete(product);
     }
 
@@ -91,7 +93,7 @@ public class ProductServiceImplTest {
     public void testGetProductById() {
         when(session.get(Product.class, product.getProduct_id())).thenReturn(product);
 
-        Product foundProduct = productService.findProductById(product.getProduct_id());
+        ProductDTO foundProduct = productService.findProductById(product.getProduct_id());
 
         assertNotNull(foundProduct);
         verify(session, times(1)).get(Product.class, product.getProduct_id());

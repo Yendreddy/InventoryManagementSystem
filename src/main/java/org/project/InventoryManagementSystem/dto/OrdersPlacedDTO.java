@@ -13,11 +13,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class OrdersPlacedDTO {
-    private UUID orderId;
-    private Date orderDate;
+    private UUID order_id;
+    private Date order_date;
     private int quantity;
-    private int totalPrice;
-    private UUID customerId;
-    private UUID productId;
-    private UUID categoryId;
+    private int total_price;
+    private UUID customer_id;
+    private UUID product_id;
+    private UUID category_id;
 }

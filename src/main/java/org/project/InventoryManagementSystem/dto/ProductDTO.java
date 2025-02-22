@@ -12,9 +12,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class ProductDTO {
-    private UUID productId;
+    private UUID product_id;
     private String name;
     private int price;
     private int quantity;
-    private UUID categoryId;
+    private UUID category_id;
 }

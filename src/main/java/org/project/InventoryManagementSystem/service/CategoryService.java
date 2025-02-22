@@ -1,18 +1,18 @@
 package org.project.InventoryManagementSystem.service;
 
-import org.project.InventoryManagementSystem.entity.Category;
+import org.project.InventoryManagementSystem.dto.CategoryDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CategoryService {
-    Category saveCategory(Category category);
+    boolean saveCategory(CategoryDTO categoryDTO);
 
-    List<Category> fetchCategoryList();
+    List<CategoryDTO> fetchCategoryList();
 
-    Category updateCategoryById(UUID category_id, Category category);
+    boolean updateCategoryById(UUID category_id, CategoryDTO categoryDTO);
 
-    void deleteCategoryById(UUID category_id);
+    boolean deleteCategoryById(UUID category_id);
 
-    Category findCategoryById(UUID category_id);
+    CategoryDTO findCategoryById(UUID category_id);
 }

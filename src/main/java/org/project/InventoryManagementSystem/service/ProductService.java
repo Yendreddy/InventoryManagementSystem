@@ -1,18 +1,18 @@
 package org.project.InventoryManagementSystem.service;
 
-import org.project.InventoryManagementSystem.entity.Product;
+import org.project.InventoryManagementSystem.dto.ProductDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
-    Product saveProduct(Product product);
+    boolean saveProduct(ProductDTO productDTO);
 
-    List<Product> fetchProductList();
+    List<ProductDTO> fetchProductList();
 
-    Product updateProduct(UUID product_id, Product product);
+    boolean updateProduct(UUID product_id, ProductDTO productDTO);
 
-    void deleteProductById(UUID product_id);
+    boolean deleteProductById(UUID product_id);
 
-    Product findProductById(UUID product_id);
+    ProductDTO getProductById(UUID product_id);
 }

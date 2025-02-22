@@ -9,9 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.project.InventoryManagementSystem.dto.CategoryDTO;
 import org.project.InventoryManagementSystem.entity.Category;
 import org.project.InventoryManagementSystem.exception.CategoryNotFoundException;
-
 
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +52,7 @@ public class CategoryServiceImplTest {
     public void testGetAllCategories() {
         when(session.createQuery("FROM Category", Category.class).list()).thenReturn(Collections.singletonList(category));
 
-        List<Category> categories = categoryService.fetchCategoryList();
+        List<CategoryDTO> categories = categoryService.fetchCategoryList();
 
         assertNotNull(categories);
         assertEquals(1, categories.size());
@@ -61,28 +61,29 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testSaveCategory() {
-        Category savedCategory = categoryService.saveCategory(category);
+        boolean isSaved = categoryService.saveCategory(CategoryDTO.builder().build());
 
-        assertNotNull(savedCategory);
-        verify(session, times(1)).save(category);
+        assertTrue(isSaved);
+        verify(session, times(1)).save(any(Category.class));
     }
 
     @Test
     public void testUpdateCategoryById() {
         when(session.get(Category.class, category.getCategory_id())).thenReturn(category);
 
-        Category updatedCategory = categoryService.updateCategoryById(category.getCategory_id(), category);
+        boolean isUpdated = categoryService.updateCategoryById(category.getCategory_id(), CategoryDTO.builder().build());
 
-        assertNotNull(updatedCategory);
-        verify(session, times(1)).merge(category);
+        assertTrue(isUpdated);
+        verify(session, times(1)).merge(any(Category.class));
     }
 
     @Test
     public void testDeleteCategoryById() {
         when(session.get(Category.class, category.getCategory_id())).thenReturn(category);
 
-        categoryService.deleteCategoryById(category.getCategory_id());
+        boolean isDeleted = categoryService.deleteCategoryById(category.getCategory_id());
 
+        assertTrue(isDeleted);
         verify(session, times(1)).delete(category);
     }
 
@@ -90,7 +91,7 @@ public class CategoryServiceImplTest {
     public void testGetCategoryById() {
         when(session.get(Category.class, category.getCategory_id())).thenReturn(category);
 
-        Category foundCategory = categoryService.findCategoryById(category.getCategory_id());
+        CategoryDTO foundCategory = categoryService.findCategoryById(category.getCategory_id());
 
         assertNotNull(foundCategory);
         verify(session, times(1)).get(Category.class, category.getCategory_id());

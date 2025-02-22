@@ -1,41 +1,68 @@
 package org.project.InventoryManagementSystem.controller;
 
-import org.project.InventoryManagementSystem.entity.Product;
+import org.modelmapper.ModelMapper;
+import org.project.InventoryManagementSystem.dto.ProductDTO;
 import org.project.InventoryManagementSystem.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/products")
 public class ProductController {
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     private ProductService productService;
 
-    @PostMapping("/products")
-    public Product saveProduct(@RequestBody Product product){
-        return productService.saveProduct(product);
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
-    @GetMapping("/products")
-    public List<Product> fetchProductList(){
+    @GetMapping
+    public List<ProductDTO> fetchProductList() {
         return productService.fetchProductList();
     }
 
-    @GetMapping("products/{id}")
-    public Product getProductById(@PathVariable UUID product_id) {
-        return productService.findProductById(product_id);
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable("id") UUID product_id) {
+        ProductDTO productDTO = productService.getProductById(product_id);
+        return ResponseEntity.ok().body(productDTO);
     }
 
-    @PutMapping("/products/{id}")
-    public Product updateProduct(@PathVariable("id") UUID product_id, @RequestBody Product product){
-        return productService.updateProduct(product_id,product);
+    @PostMapping
+    public ResponseEntity<ProductDTO> saveProduct(@RequestBody ProductDTO productDTO) {
+        boolean isCreated = productService.saveProduct(productDTO);
+        if (isCreated) {
+            return new ResponseEntity<>(productDTO, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @DeleteMapping("/products/{id}")
-    public void deleteProductById(@PathVariable("id") UUID product_id){
-        productService.deleteProductById(product_id);
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable("id") UUID product_id, @RequestBody ProductDTO productDTO) {
+        boolean isUpdated = productService.updateProduct(product_id, productDTO);
+        if (isUpdated) {
+            return ResponseEntity.ok().body(productDTO);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProductById(@PathVariable("id") UUID product_id) {
+        boolean isDeleted = productService.deleteProductById(product_id);
+        if (isDeleted) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
