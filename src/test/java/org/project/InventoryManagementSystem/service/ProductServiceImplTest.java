@@ -93,7 +93,7 @@ public class ProductServiceImplTest {
     public void testGetProductById() {
         when(session.get(Product.class, product.getProduct_id())).thenReturn(product);
 
-        ProductDTO foundProduct = productService.findProductById(product.getProduct_id());
+        ProductDTO foundProduct = productService.getProductById(product.getProduct_id());
 
         assertNotNull(foundProduct);
         verify(session, times(1)).get(Product.class, product.getProduct_id());
@@ -103,6 +103,6 @@ public class ProductServiceImplTest {
     public void testProductNotFoundException() {
         when(session.get(Product.class, product.getProduct_id())).thenReturn(null);
 
-        assertThrows(ProductNotFoundException.class, () -> productService.findProductById(product.getProduct_id()));
+        assertThrows(ProductNotFoundException.class, () -> productService.getProductById(product.getProduct_id()));
     }
 }

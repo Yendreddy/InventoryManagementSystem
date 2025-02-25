@@ -8,6 +8,7 @@ import org.project.InventoryManagementSystem.dto.CategoryDTO;
 import org.project.InventoryManagementSystem.entity.Category;
 import org.project.InventoryManagementSystem.exception.CategoryNotFoundException;
 import org.project.InventoryManagementSystem.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +18,10 @@ import java.util.stream.Collectors;
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    private final SessionFactory sessionFactory;
-    private final ModelMapper modelMapper;
+    @Autowired
+    private SessionFactory sessionFactory;
+    @Autowired
+    private ModelMapper modelMapper;
 
     public CategoryServiceImpl(ModelMapper modelMapper) {
         Configuration cfg = new Configuration();

@@ -23,11 +23,14 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID customer_id;
 
+
     @NotBlank(message = "Name should not be blank")
     private String name;
 
+
     @Pattern(regexp = "\\d{10}", message = "Phone number should be 10 digits")
     private String phone_number;
+
 
     @Email(message = "Email should be valid")
     private String email_id;

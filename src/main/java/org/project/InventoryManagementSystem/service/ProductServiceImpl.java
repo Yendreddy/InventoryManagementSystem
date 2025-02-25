@@ -97,6 +97,7 @@ public class ProductServiceImpl implements ProductService {
             session.beginTransaction();
             Product product = session.get(Product.class, product_id);
             if (product != null) {
+
                 session.delete(product);
                 session.getTransaction().commit();
                 return true;

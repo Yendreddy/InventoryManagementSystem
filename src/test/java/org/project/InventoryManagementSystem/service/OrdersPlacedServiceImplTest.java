@@ -1,6 +1,5 @@
 package org.project.InventoryManagementSystem.service;
 import org.hibernate.Session;
-
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.junit.jupiter.api.BeforeEach;

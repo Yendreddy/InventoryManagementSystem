@@ -1,10 +1,7 @@
 package org.project.InventoryManagementSystem.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -14,6 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = "category")
 public class Product implements Serializable {
 
     @Id
