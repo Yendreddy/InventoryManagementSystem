@@ -8,5 +8,6 @@ In this project, we will establish relationships among the product table, custom
   finally, the relationship between the product and category tables is many-to-one, as multiple products can belong to a single category.
 
 Here is the ER diagram of Inventory Management System:
+![image](https://github.com/user-attachments/assets/477dbbef-79f6-48ec-82c2-27e03d65cf14)
 
-![image](https://github.com/user-attachments/assets/29e3e0fa-e6ff-481f-a25d-8395b011201f)
+
