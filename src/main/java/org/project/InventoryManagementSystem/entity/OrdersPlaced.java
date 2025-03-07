@@ -8,6 +8,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.project.InventoryManagementSystem.dto.ProductDTO;
+import org.project.InventoryManagementSystem.exception.ProductNotFoundException;
+import org.project.InventoryManagementSystem.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,16 +51,15 @@ public class OrdersPlaced implements Serializable {
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID category_id;
 
-    /**
-     * Calculates total price of the products that were ordered
-     * takes price from the Product table and quantity from the OrdersPlaced table to calculate total price
-     */
-    public void calculateTotalPrice(Session session) {
-        if (product_id != null) {
-            Product product = session.get(Product.class, product_id);
-            if (product != null) {
-                total_price = product.getPrice() * quantity;
-            }
+    @Transient
+    @Autowired
+    private ProductRepository productRepository;
+
+    public void calculateTotalPrice() {
+        if (this.product_id != null) {
+            Product product = productRepository.findById(this.product_id)
+                    .orElseThrow(() -> new ProductNotFoundException("Product", "id", product_id));
+            this.total_price = product.getPrice() * this.quantity;
         }
     }
 

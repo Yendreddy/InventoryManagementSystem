@@ -14,7 +14,7 @@ import java.util.UUID;
 public class Product implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID product_id;
 
     @Column(nullable = false)

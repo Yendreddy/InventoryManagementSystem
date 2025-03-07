@@ -1,10 +1,6 @@
 package org.project.InventoryManagementSystem.service;
 
-import org.project.InventoryManagementSystem.dto.CategoryDTO;
-import org.project.InventoryManagementSystem.dto.CustomerDTO;
-import org.project.InventoryManagementSystem.dto.OrdersPlacedDTO;
 import org.project.InventoryManagementSystem.entity.OrdersPlaced;
-import org.project.InventoryManagementSystem.exception.CustomerNotFoundException;
 import org.project.InventoryManagementSystem.exception.OrderNotFoundException;
 
 import java.util.List;

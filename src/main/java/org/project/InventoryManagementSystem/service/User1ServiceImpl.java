@@ -20,6 +20,7 @@ public class User1ServiceImpl implements User1Service {
         return userRepository.save(user);
     }
 
+
     public Optional<User1> getUserById(UUID user_id) {
         return Optional.ofNullable(userRepository.findById(user_id).orElseThrow(() -> new RuntimeException("User not found with id: " + user_id)));
     }

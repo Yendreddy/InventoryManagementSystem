@@ -52,7 +52,6 @@ public class OrdersPlacedServiceImpl implements OrdersPlacedService {
         existingOrder.setCategory_id(order.getCategory_id());
         return (OrdersPlaced)this.ordersPlacedRepository.save(existingOrder);
     }
-
     @CacheEvict(
             value = {"orders"},
             key = "#order_id"

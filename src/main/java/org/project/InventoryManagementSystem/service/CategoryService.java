@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CategoryService {
-
     /**
      * Saves a new category.
      *

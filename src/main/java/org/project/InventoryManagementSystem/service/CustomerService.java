@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CustomerService {
-
     /**
      * Saves a new customer.
      *

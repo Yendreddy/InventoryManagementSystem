@@ -35,14 +35,6 @@ public class SecurityConfig {
     @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("user").password("{noop}password").roles("USER")
-                .and()
-                .withUser("admin").password("{noop}admin").roles("ADMIN");
-    }
-
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository() {
         ClientRegistration googleRegistration = ClientRegistration.withRegistrationId("google")
@@ -57,6 +49,7 @@ public class SecurityConfig {
                 .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .build();
+
 
         return new InMemoryClientRegistrationRepository(googleRegistration);
     }

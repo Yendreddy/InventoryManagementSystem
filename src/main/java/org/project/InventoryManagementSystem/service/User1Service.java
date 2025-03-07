@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.project.InventoryManagementSystem.entity.User1;
 
+
 public interface User1Service {
     User1 saveUser(User1 user);
 

@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import java.util.UUID;
 
 import lombok.Data;
-import lombok.Generated;
 import org.project.InventoryManagementSystem.enums.Role;
 
 @Entity
