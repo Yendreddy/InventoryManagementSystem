@@ -3,6 +3,7 @@ package org.project.InventoryManagementSystem.service;
 import org.project.InventoryManagementSystem.dto.CategoryDTO;
 import org.project.InventoryManagementSystem.dto.CustomerDTO;
 import org.project.InventoryManagementSystem.dto.OrdersPlacedDTO;
+import org.project.InventoryManagementSystem.entity.OrdersPlaced;
 import org.project.InventoryManagementSystem.exception.CustomerNotFoundException;
 import org.project.InventoryManagementSystem.exception.OrderNotFoundException;
 
@@ -14,43 +15,43 @@ public interface OrdersPlacedService {
     /**
      * Fetches the list of all orders.
      *
-     * @return A list of {@link OrdersPlacedDTO} objects representing all orders.
+     * @return A list of {@link OrdersPlaced} objects representing all orders.
      */
-    List<OrdersPlacedDTO> getAllOrders();
+    List<OrdersPlaced> getAllOrders();
 
     /**
      * Finds an order by its ID.
      *
      * @param order_id The UUID of the order to find.
-     * @return A {@link OrdersPlacedDTO} object representing the found order.
+     * @return A {@link OrdersPlaced} object representing the found order.
      * @throws OrderNotFoundException if the order is not found.
      */
-    OrdersPlacedDTO getOrderById(UUID order_id);
+    OrdersPlaced getOrderById(UUID order_id);
 
     /**
      * Saves a new order.
      *
-     * @param ordersPlacedDTO The {@link OrdersPlacedDTO} object representing the order to save.
-     * @return true if the order is saved successfully, false otherwise.
+     * @param order The {@link OrdersPlaced} object representing the order to save.
+     * @return order.
      */
-    boolean saveOrder(OrdersPlacedDTO ordersPlacedDTO);
+    OrdersPlaced saveOrder(OrdersPlaced order);
 
     /**
      * Updates an existing order by its ID.
      *
      * @param order_id The UUID of the order to update.
-     * The {@link OrdersPlacedDTO} object representing the updated order.
-     * @return true if the order is updated successfully, false otherwise.
+     * The {@link OrdersPlaced} object representing the updated order.
+     * @return updated order.
      * @throws OrderNotFoundException if the customer is not found.
      */
-    boolean updateOrderById(UUID order_id, OrdersPlacedDTO ordersPlacedDTO);
+    OrdersPlaced updateOrderById(UUID order_id, OrdersPlaced order);
 
     /**
      * Deletes an order by its ID.
      *
      * @param order_id The UUID of the order to delete.
-     * @return true if the order is deleted successfully, false otherwise.
      * @throws OrderNotFoundException if the customer is not found.
      */
-    boolean deleteOrderById(UUID order_id);
+    void deleteOrderById(UUID order_id);
 }
+

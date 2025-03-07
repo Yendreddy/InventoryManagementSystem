@@ -1,17 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
-<hibernate-configuration>
-    <session-factory>
-        <property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>
-        <property name="hibernate.connection.url">jdbc:oracle:thin:@//localhost:1521/xepdb1</property>
-        <property name="hibernate.connection.username">EmployeeManagementSystemUsingSpringBoot</property>
-        <property name="hibernate.connection.password">Employee12</property>
-        <property name="hibernate.show_sql">true</property>
-        <property name="hibernate.hbm2ddl.auto">update</property>
-        <mapping class="org.project.InventoryManagementSystem.entity.Category" />
-        <mapping class="org.project.InventoryManagementSystem.entity.Customer" />
-        <mapping class="org.project.InventoryManagementSystem.entity.OrdersPlaced" />
-        <mapping class="org.project.InventoryManagementSystem.entity.OrderItem" />
-        <mapping class="org.project.InventoryManagementSystem.entity.Product" />
-    </session-factory>
-</hibernate-configuration>
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">-->
+<!--<hibernate-configuration>-->
+<!--    <session-factory>-->
+<!--        <property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>-->
+<!--        <property name="hibernate.connection.url">jdbc:oracle:thin:@//localhost:1521/xepdb1</property>-->
+<!--        <property name="hibernate.connection.username">EmployeeManagementSystemUsingSpringBoot</property>-->
+<!--        <property name="hibernate.connection.password">Employee12</property>-->
+<!--        <property name="hibernate.show_sql">true</property>-->
+<!--        <property name="hibernate.hbm2ddl.auto">update</property>-->
+<!--        <mapping class="org.project.InventoryManagementSystem.entity.Category" />-->
+<!--        <mapping class="org.project.InventoryManagementSystem.entity.Customer" />-->
+<!--        <mapping class="org.project.InventoryManagementSystem.entity.OrdersPlaced" />-->
+<!--        <mapping class="org.project.InventoryManagementSystem.entity.OrderItem" />-->
+<!--        <mapping class="org.project.InventoryManagementSystem.entity.Product" />-->
+<!--    </session-factory>-->
+<!--</hibernate-configuration>-->

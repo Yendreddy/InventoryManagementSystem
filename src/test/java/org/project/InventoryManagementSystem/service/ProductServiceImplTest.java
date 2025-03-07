@@ -1,108 +1,109 @@
 package org.project.InventoryManagementSystem.service;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.project.InventoryManagementSystem.dto.ProductDTO;
 import org.project.InventoryManagementSystem.entity.Product;
 import org.project.InventoryManagementSystem.exception.ProductNotFoundException;
+import org.project.InventoryManagementSystem.repository.ProductRepository;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class})
 public class ProductServiceImplTest {
-
     @Mock
-    private SessionFactory sessionFactory;
-
-    @Mock
-    private Session session;
-
-    @Mock
-    private Transaction transaction;
-
+    private ProductRepository productRepository;
     @InjectMocks
     private ProductServiceImpl productService;
-
     private Product product;
+    private UUID productId;
+
+    public ProductServiceImplTest() {
+    }
 
     @BeforeEach
     public void setUp() {
-        product = Product.builder()
-                .product_id(UUID.randomUUID())
-                .name("Laptop")
-                .price(1000)
-                .quantity(10)
-                .build();
-
-        when(sessionFactory.openSession()).thenReturn(session);
-        when(session.beginTransaction()).thenReturn(transaction);
+        this.productId = UUID.randomUUID();
+        this.product = new Product();
+        this.product.setProduct_id(this.productId);
+        this.product.setName("Laptop");
+        this.product.setPrice(1000);
+        this.product.setQuantity(10);
     }
 
     @Test
-    public void testGetAllProducts() {
-        when(session.createQuery("FROM Product", Product.class).list()).thenReturn(Collections.singletonList(product));
-
-        List<ProductDTO> products = productService.fetchProductList();
-
-        assertNotNull(products);
-        assertEquals(1, products.size());
-        verify(session, times(1)).createQuery("FROM Product", Product.class);
-    }
-
-    @Test
-    public void testSaveProduct() {
-        boolean isSaved = productService.saveProduct(ProductDTO.builder().build());
-
-        assertTrue(isSaved);
-        verify(session, times(1)).save(any(Product.class));
-    }
-
-    @Test
-    public void testUpdateProductById() {
-        when(session.get(Product.class, product.getProduct_id())).thenReturn(product);
-
-        boolean isUpdated = productService.updateProduct(product.getProduct_id(), ProductDTO.builder().build());
-
-        assertTrue(isUpdated);
-        verify(session, times(1)).merge(any(Product.class));
-    }
-
-    @Test
-    public void testDeleteProductById() {
-        when(session.get(Product.class, product.getProduct_id())).thenReturn(product);
-
-        boolean isDeleted = productService.deleteProductById(product.getProduct_id());
-
-        assertTrue(isDeleted);
-        verify(session, times(1)).delete(product);
+    public void testFetchProductList() {
+        List<Product> products = Arrays.asList(this.product);
+        Mockito.when(this.productRepository.findAll()).thenReturn(products);
+        List<Product> fetchedProducts = this.productService.fetchProductList();
+        Assertions.assertEquals(1, fetchedProducts.size());
+        ((ProductRepository)Mockito.verify(this.productRepository, Mockito.times(1))).findAll();
     }
 
     @Test
     public void testGetProductById() {
-        when(session.get(Product.class, product.getProduct_id())).thenReturn(product);
-
-        ProductDTO foundProduct = productService.getProductById(product.getProduct_id());
-
-        assertNotNull(foundProduct);
-        verify(session, times(1)).get(Product.class, product.getProduct_id());
+        Mockito.when(this.productRepository.findById(this.productId)).thenReturn(Optional.of(this.product));
+        Product fetchedProduct = this.productService.getProductById(this.productId);
+        Assertions.assertNotNull(fetchedProduct);
+        Assertions.assertEquals("Laptop", fetchedProduct.getName());
+        ((ProductRepository)Mockito.verify(this.productRepository, Mockito.times(1))).findById(this.productId);
     }
 
     @Test
-    public void testProductNotFoundException() {
-        when(session.get(Product.class, product.getProduct_id())).thenReturn(null);
+    public void testGetProductById_NotFound() {
+        Mockito.when(this.productRepository.findById(this.productId)).thenReturn(Optional.empty());
+        Assertions.assertThrows(ProductNotFoundException.class, () -> this.productService.getProductById(this.productId));
+        ((ProductRepository)Mockito.verify(this.productRepository, Mockito.times(1))).findById(this.productId);
+    }
 
-        assertThrows(ProductNotFoundException.class, () -> productService.getProductById(product.getProduct_id()));
+    @Test
+    public void testSaveProduct() {
+        Mockito.when((Product)this.productRepository.save(this.product)).thenReturn(this.product);
+        Product savedProduct = this.productService.saveProduct(this.product);
+        Assertions.assertNotNull(savedProduct);
+        Assertions.assertEquals("Laptop", savedProduct.getName());
+        ((ProductRepository)Mockito.verify(this.productRepository, Mockito.times(1))).save(this.product);
+    }
+
+    @Test
+    public void testUpdateProduct() {
+        Mockito.when(this.productRepository.findById(this.productId)).thenReturn(Optional.of(this.product));
+        Mockito.when((Product)this.productRepository.save(this.product)).thenReturn(this.product);
+        this.product.setName("Updated Laptop");
+        Product updatedProduct = this.productService.updateProduct(this.productId, this.product);
+        Assertions.assertNotNull(updatedProduct);
+        Assertions.assertEquals("Updated Laptop", updatedProduct.getName());
+        ((ProductRepository)Mockito.verify(this.productRepository, Mockito.times(1))).findById(this.productId);
+        ((ProductRepository)Mockito.verify(this.productRepository, Mockito.times(1))).save(this.product);
+    }
+
+    @Test
+    public void testUpdateProduct_NotFound() {
+        Mockito.when(this.productRepository.findById(this.productId)).thenReturn(Optional.empty());
+        Assertions.assertThrows(ProductNotFoundException.class, () -> this.productService.updateProduct(this.productId, this.product));
+        ((ProductRepository)Mockito.verify(this.productRepository, Mockito.times(1))).findById(this.productId);
+    }
+
+    @Test
+    public void testDeleteProductById() {
+        Mockito.when(this.productRepository.findById(this.productId)).thenReturn(Optional.of(this.product));
+        ((ProductRepository)Mockito.doNothing().when(this.productRepository)).delete(this.product);
+        this.productService.deleteProductById(this.productId);
+        ((ProductRepository)Mockito.verify(this.productRepository, Mockito.times(1))).findById(this.productId);
+        ((ProductRepository)Mockito.verify(this.productRepository, Mockito.times(1))).delete(this.product);
+    }
+
+    @Test
+    public void testDeleteProductById_NotFound() {
+        Mockito.when(this.productRepository.findById(this.productId)).thenReturn(Optional.empty());
+        Assertions.assertThrows(ProductNotFoundException.class, () -> this.productService.deleteProductById(this.productId));
+        ((ProductRepository)Mockito.verify(this.productRepository, Mockito.times(1))).findById(this.productId);
     }
 }

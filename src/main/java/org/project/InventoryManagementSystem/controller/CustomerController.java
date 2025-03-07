@@ -1,65 +1,61 @@
 package org.project.InventoryManagementSystem.controller;
 
-import org.modelmapper.ModelMapper;
-import org.project.InventoryManagementSystem.dto.CustomerDTO;
+import java.util.List;
+import java.util.UUID;
+import lombok.Generated;
+import org.project.InventoryManagementSystem.entity.Customer;
 import org.project.InventoryManagementSystem.service.CustomerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/customers")
+@RequestMapping({"/customers"})
 public class CustomerController {
-
-    @Autowired
-    private ModelMapper modelMapper;
-
+    @Generated
+    private static final Logger log = LoggerFactory.getLogger(CustomerController.class);
     @Autowired
     private CustomerService customerService;
 
-
-    @GetMapping
-    public List<CustomerDTO> getAllCustomers() {
-        return customerService.fetchCustomerList();
+    public CustomerController() {
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable("id") UUID customer_id) {
-        CustomerDTO customerDTO = customerService.getCustomerById(customer_id);
-        return ResponseEntity.ok().body(customerDTO);
+    @GetMapping({"/get"})
+    public List<Customer> getAllCustomers() {
+        return this.customerService.fetchCustomerList();
     }
 
-    @PostMapping
-    public ResponseEntity<CustomerDTO> saveCustomer(@RequestBody CustomerDTO customerDTO) {
-        boolean isCreated = customerService.saveCustomer(customerDTO);
-        if (isCreated) {
-            return new ResponseEntity<>(customerDTO, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @GetMapping({"/get/{customer_id}"})
+    public ResponseEntity<Customer> getCustomerById(@PathVariable("customer_id") UUID customer_id) {
+        Customer customer = this.customerService.getCustomerById(customer_id);
+        return ResponseEntity.ok().body(customer);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable("id") UUID customer_id, @RequestBody CustomerDTO customerDTO) {
-        boolean isUpdated = customerService.updateCustomer(customer_id, customerDTO);
-        if (isUpdated) {
-            return ResponseEntity.ok().body(customerDTO);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping({"/save"})
+    public ResponseEntity<Customer> saveCustomer(@RequestBody Customer customer) {
+        Customer savedCustomer = this.customerService.saveCustomer(customer);
+        return new ResponseEntity(savedCustomer, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCustomerById(@PathVariable("id") UUID customer_id) {
-        boolean isDeleted = customerService.deleteCustomerById(customer_id);
-        if (isDeleted) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PutMapping({"/update/{customer_id}"})
+    public ResponseEntity<Customer> updateCustomer(@PathVariable("customer_id") UUID customer_id, @RequestBody Customer customer) {
+        Customer updatedCustomer = this.customerService.updateCustomer(customer_id, customer);
+        return ResponseEntity.ok().body(updatedCustomer);
+    }
+
+    @DeleteMapping({"/delete/{customer_id}"})
+    public ResponseEntity<Void> deleteCustomerById(@PathVariable("customer_id") UUID customer_id) {
+        this.customerService.deleteCustomerById(customer_id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

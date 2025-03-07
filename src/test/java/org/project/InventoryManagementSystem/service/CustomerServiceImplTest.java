@@ -1,108 +1,109 @@
 package org.project.InventoryManagementSystem.service;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.project.InventoryManagementSystem.dto.CustomerDTO;
 import org.project.InventoryManagementSystem.entity.Customer;
 import org.project.InventoryManagementSystem.exception.CustomerNotFoundException;
+import org.project.InventoryManagementSystem.repository.CustomerRepository;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class})
 public class CustomerServiceImplTest {
-
     @Mock
-    private SessionFactory sessionFactory;
-
-    @Mock
-    private Session session;
-
-    @Mock
-    private Transaction transaction;
-
+    private CustomerRepository customerRepository;
     @InjectMocks
     private CustomerServiceImpl customerService;
-
     private Customer customer;
+    private UUID customerId;
+
+    public CustomerServiceImplTest() {
+    }
 
     @BeforeEach
     public void setUp() {
-        customer = Customer.builder()
-                .customer_id(UUID.randomUUID())
-                .name("John Doe")
-                .phone_number("1234567890")
-                .email_id("john.doe@example.com")
-                .build();
-
-        when(sessionFactory.openSession()).thenReturn(session);
-        when(session.beginTransaction()).thenReturn(transaction);
+        this.customerId = UUID.randomUUID();
+        this.customer = new Customer();
+        this.customer.setCustomer_id(this.customerId);
+        this.customer.setName("John Doe");
+        this.customer.setPhone_number("1234567890");
+        this.customer.setEmail_id("john.doe@example.com");
     }
 
     @Test
-    public void testGetAllCustomers() {
-        when(session.createQuery("FROM Customer", Customer.class).list()).thenReturn(Collections.singletonList(customer));
-
-        List<CustomerDTO> customers = customerService.fetchCustomerList();
-
-        assertNotNull(customers);
-        assertEquals(1, customers.size());
-        verify(session, times(1)).createQuery("FROM Customer", Customer.class);
-    }
-
-    @Test
-    public void testSaveCustomer() {
-        boolean isSaved = customerService.saveCustomer(CustomerDTO.builder().build());
-
-        assertTrue(isSaved);
-        verify(session, times(1)).save(any(Customer.class));
-    }
-
-    @Test
-    public void testUpdateCustomerById() {
-        when(session.get(Customer.class, customer.getCustomer_id())).thenReturn(customer);
-
-        boolean isUpdated = customerService.updateCustomer(customer.getCustomer_id(), CustomerDTO.builder().build());
-
-        assertTrue(isUpdated);
-        verify(session, times(1)).merge(any(Customer.class));
-    }
-
-    @Test
-    public void testDeleteCustomerById() {
-        when(session.get(Customer.class, customer.getCustomer_id())).thenReturn(customer);
-
-        boolean isDeleted = customerService.deleteCustomerById(customer.getCustomer_id());
-
-        assertTrue(isDeleted);
-        verify(session, times(1)).delete(customer);
+    public void testFetchCustomerList() {
+        List<Customer> customers = Arrays.asList(this.customer);
+        Mockito.when(this.customerRepository.findAll()).thenReturn(customers);
+        List<Customer> fetchedCustomers = this.customerService.fetchCustomerList();
+        Assertions.assertEquals(1, fetchedCustomers.size());
+        ((CustomerRepository)Mockito.verify(this.customerRepository, Mockito.times(1))).findAll();
     }
 
     @Test
     public void testGetCustomerById() {
-        when(session.get(Customer.class, customer.getCustomer_id())).thenReturn(customer);
-
-        CustomerDTO foundCustomer = customerService.getCustomerById(customer.getCustomer_id());
-
-        assertNotNull(foundCustomer);
-        verify(session, times(1)).get(Customer.class, customer.getCustomer_id());
+        Mockito.when(this.customerRepository.findById(this.customerId)).thenReturn(Optional.of(this.customer));
+        Customer fetchedCustomer = this.customerService.getCustomerById(this.customerId);
+        Assertions.assertNotNull(fetchedCustomer);
+        Assertions.assertEquals("John Doe", fetchedCustomer.getName());
+        ((CustomerRepository)Mockito.verify(this.customerRepository, Mockito.times(1))).findById(this.customerId);
     }
 
     @Test
-    public void testCustomerNotFoundException() {
-        when(session.get(Customer.class, customer.getCustomer_id())).thenReturn(null);
+    public void testGetCustomerById_NotFound() {
+        Mockito.when(this.customerRepository.findById(this.customerId)).thenReturn(Optional.empty());
+        Assertions.assertThrows(CustomerNotFoundException.class, () -> this.customerService.getCustomerById(this.customerId));
+        ((CustomerRepository)Mockito.verify(this.customerRepository, Mockito.times(1))).findById(this.customerId);
+    }
 
-        assertThrows(CustomerNotFoundException.class, () -> customerService.getCustomerById(customer.getCustomer_id()));
+    @Test
+    public void testSaveCustomer() {
+        Mockito.when((Customer)this.customerRepository.save(this.customer)).thenReturn(this.customer);
+        Customer savedCustomer = this.customerService.saveCustomer(this.customer);
+        Assertions.assertNotNull(savedCustomer);
+        Assertions.assertEquals("John Doe", savedCustomer.getName());
+        ((CustomerRepository)Mockito.verify(this.customerRepository, Mockito.times(1))).save(this.customer);
+    }
+
+    @Test
+    public void testUpdateCustomer() {
+        Mockito.when(this.customerRepository.findById(this.customerId)).thenReturn(Optional.of(this.customer));
+        Mockito.when((Customer)this.customerRepository.save(this.customer)).thenReturn(this.customer);
+        this.customer.setName("Updated John Doe");
+        Customer updatedCustomer = this.customerService.updateCustomer(this.customerId, this.customer);
+        Assertions.assertNotNull(updatedCustomer);
+        Assertions.assertEquals("Updated John Doe", updatedCustomer.getName());
+        ((CustomerRepository)Mockito.verify(this.customerRepository, Mockito.times(1))).findById(this.customerId);
+        ((CustomerRepository)Mockito.verify(this.customerRepository, Mockito.times(1))).save(this.customer);
+    }
+
+    @Test
+    public void testUpdateCustomer_NotFound() {
+        Mockito.when(this.customerRepository.findById(this.customerId)).thenReturn(Optional.empty());
+        Assertions.assertThrows(CustomerNotFoundException.class, () -> this.customerService.updateCustomer(this.customerId, this.customer));
+        ((CustomerRepository)Mockito.verify(this.customerRepository, Mockito.times(1))).findById(this.customerId);
+    }
+
+    @Test
+    public void testDeleteCustomerById() {
+        Mockito.when(this.customerRepository.findById(this.customerId)).thenReturn(Optional.of(this.customer));
+        ((CustomerRepository)Mockito.doNothing().when(this.customerRepository)).delete(this.customer);
+        this.customerService.deleteCustomerById(this.customerId);
+        ((CustomerRepository)Mockito.verify(this.customerRepository, Mockito.times(1))).findById(this.customerId);
+        ((CustomerRepository)Mockito.verify(this.customerRepository, Mockito.times(1))).delete(this.customer);
+    }
+
+    @Test
+    public void testDeleteCustomerById_NotFound() {
+        Mockito.when(this.customerRepository.findById(this.customerId)).thenReturn(Optional.empty());
+        Assertions.assertThrows(CustomerNotFoundException.class, () -> this.customerService.deleteCustomerById(this.customerId));
+        ((CustomerRepository)Mockito.verify(this.customerRepository, Mockito.times(1))).findById(this.customerId);
     }
 }

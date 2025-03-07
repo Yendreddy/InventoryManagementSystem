@@ -1,105 +1,107 @@
 package org.project.InventoryManagementSystem.service;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.project.InventoryManagementSystem.dto.OrdersPlacedDTO;
 import org.project.InventoryManagementSystem.entity.OrdersPlaced;
 import org.project.InventoryManagementSystem.exception.OrderNotFoundException;
+import org.project.InventoryManagementSystem.repository.OrdersPlacedRepository;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class})
 public class OrdersPlacedServiceImplTest {
-
     @Mock
-    private SessionFactory sessionFactory;
-
-    @Mock
-    private Session session;
-
-    @Mock
-    private Transaction transaction;
-
+    private OrdersPlacedRepository ordersPlacedRepository;
     @InjectMocks
     private OrdersPlacedServiceImpl ordersPlacedService;
-
     private OrdersPlaced order;
+    private UUID orderId;
+
+    public OrdersPlacedServiceImplTest() {
+    }
 
     @BeforeEach
     public void setUp() {
-        order = OrdersPlaced.builder()
-                .order_id(UUID.randomUUID())
-                .quantity(2)
-                .total_price(200)
-                .build();
-
-        when(sessionFactory.openSession()).thenReturn(session);
-        when(session.beginTransaction()).thenReturn(transaction);
+        this.orderId = UUID.randomUUID();
+        this.order = new OrdersPlaced();
+        this.order.setOrder_id(this.orderId);
+        this.order.setQuantity(10);
+        this.order.setTotal_price(1000);
     }
 
     @Test
     public void testGetAllOrders() {
-        when(session.createQuery("FROM OrdersPlaced", OrdersPlaced.class).list()).thenReturn(Collections.singletonList(order));
-
-        List<OrdersPlacedDTO> orders = ordersPlacedService.getAllOrders();
-
-        assertNotNull(orders);
-        assertEquals(1, orders.size());
-        verify(session, times(1)).createQuery("FROM OrdersPlaced", OrdersPlaced.class);
-    }
-
-    @Test
-    public void testSaveOrder() {
-        boolean isSaved = ordersPlacedService.saveOrder(OrdersPlacedDTO.builder().build());
-
-        assertTrue(isSaved);
-        verify(session, times(1)).save(any(OrdersPlaced.class));
-    }
-
-    @Test
-    public void testUpdateOrderById() {
-        when(session.get(OrdersPlaced.class, order.getOrder_id())).thenReturn(order);
-
-        boolean isUpdated = ordersPlacedService.updateOrderById(order.getOrder_id(), OrdersPlacedDTO.builder().build());
-
-        assertTrue(isUpdated);
-        verify(session, times(1)).merge(any(OrdersPlaced.class));
-    }
-
-    @Test
-    public void testDeleteOrderById() {
-        when(session.get(OrdersPlaced.class, order.getOrder_id())).thenReturn(order);
-
-        boolean isDeleted = ordersPlacedService.deleteOrderById(order.getOrder_id());
-
-        assertTrue(isDeleted);
-        verify(session, times(1)).delete(order);
+        List<OrdersPlaced> orders = Arrays.asList(this.order);
+        Mockito.when(this.ordersPlacedRepository.findAll()).thenReturn(orders);
+        List<OrdersPlaced> fetchedOrders = this.ordersPlacedService.getAllOrders();
+        Assertions.assertEquals(1, fetchedOrders.size());
+        ((OrdersPlacedRepository)Mockito.verify(this.ordersPlacedRepository, Mockito.times(1))).findAll();
     }
 
     @Test
     public void testGetOrderById() {
-        when(session.get(OrdersPlaced.class, order.getOrder_id())).thenReturn(order);
-
-        OrdersPlacedDTO foundOrder = ordersPlacedService.getOrderById(order.getOrder_id());
-
-        assertNotNull(foundOrder);
-        verify(session, times(1)).get(OrdersPlaced.class, order.getOrder_id());
+        Mockito.when(this.ordersPlacedRepository.findById(this.orderId)).thenReturn(Optional.of(this.order));
+        OrdersPlaced fetchedOrder = this.ordersPlacedService.getOrderById(this.orderId);
+        Assertions.assertNotNull(fetchedOrder);
+        Assertions.assertEquals(10, fetchedOrder.getQuantity());
+        ((OrdersPlacedRepository)Mockito.verify(this.ordersPlacedRepository, Mockito.times(1))).findById(this.orderId);
     }
-    @Test
-    public void testOrderNotFoundException() {
-        when(session.get(OrdersPlaced.class, order.getOrder_id())).thenReturn(null);
 
-        assertThrows(OrderNotFoundException.class, () -> ordersPlacedService.getOrderById(order.getOrder_id()));
+    @Test
+    public void testGetOrderById_NotFound() {
+        Mockito.when(this.ordersPlacedRepository.findById(this.orderId)).thenReturn(Optional.empty());
+        Assertions.assertThrows(OrderNotFoundException.class, () -> this.ordersPlacedService.getOrderById(this.orderId));
+        ((OrdersPlacedRepository)Mockito.verify(this.ordersPlacedRepository, Mockito.times(1))).findById(this.orderId);
+    }
+
+    @Test
+    public void testSaveOrder() {
+        Mockito.when((OrdersPlaced)this.ordersPlacedRepository.save(this.order)).thenReturn(this.order);
+        OrdersPlaced savedOrder = this.ordersPlacedService.saveOrder(this.order);
+        Assertions.assertNotNull(savedOrder);
+        Assertions.assertEquals(10, savedOrder.getQuantity());
+        ((OrdersPlacedRepository)Mockito.verify(this.ordersPlacedRepository, Mockito.times(1))).save(this.order);
+    }
+
+    @Test
+    public void testUpdateOrderById() {
+        Mockito.when(this.ordersPlacedRepository.findById(this.orderId)).thenReturn(Optional.of(this.order));
+        Mockito.when((OrdersPlaced)this.ordersPlacedRepository.save(this.order)).thenReturn(this.order);
+        this.order.setQuantity(20);
+        OrdersPlaced updatedOrder = this.ordersPlacedService.updateOrderById(this.orderId, this.order);
+        Assertions.assertNotNull(updatedOrder);
+        Assertions.assertEquals(20, updatedOrder.getQuantity());
+        ((OrdersPlacedRepository)Mockito.verify(this.ordersPlacedRepository, Mockito.times(1))).findById(this.orderId);
+        ((OrdersPlacedRepository)Mockito.verify(this.ordersPlacedRepository, Mockito.times(1))).save(this.order);
+    }
+
+    @Test
+    public void testUpdateOrderById_NotFound() {
+        Mockito.when(this.ordersPlacedRepository.findById(this.orderId)).thenReturn(Optional.empty());
+        Assertions.assertThrows(OrderNotFoundException.class, () -> this.ordersPlacedService.updateOrderById(this.orderId, this.order));
+        ((OrdersPlacedRepository)Mockito.verify(this.ordersPlacedRepository, Mockito.times(1))).findById(this.orderId);
+    }
+
+    @Test
+    public void testDeleteOrderById() {
+        Mockito.when(this.ordersPlacedRepository.findById(this.orderId)).thenReturn(Optional.of(this.order));
+        ((OrdersPlacedRepository)Mockito.doNothing().when(this.ordersPlacedRepository)).delete(this.order);
+        this.ordersPlacedService.deleteOrderById(this.orderId);
+        ((OrdersPlacedRepository)Mockito.verify(this.ordersPlacedRepository, Mockito.times(1))).findById(this.orderId);
+        ((OrdersPlacedRepository)Mockito.verify(this.ordersPlacedRepository, Mockito.times(1))).delete(this.order);
+    }
+
+    @Test
+    public void testDeleteOrderById_NotFound() {
+        Mockito.when(this.ordersPlacedRepository.findById(this.orderId)).thenReturn(Optional.empty());
+        Assertions.assertThrows(OrderNotFoundException.class, () -> this.ordersPlacedService.deleteOrderById(this.orderId));
+        ((OrdersPlacedRepository)Mockito.verify(this.ordersPlacedRepository, Mockito.times(1))).findById(this.orderId);
     }
 }

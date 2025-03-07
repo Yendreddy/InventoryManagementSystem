@@ -1,65 +1,56 @@
 package org.project.InventoryManagementSystem.controller;
 
-import org.modelmapper.ModelMapper;
-import org.project.InventoryManagementSystem.dto.CategoryDTO;
+import java.util.List;
+import java.util.UUID;
+import org.project.InventoryManagementSystem.entity.Category;
 import org.project.InventoryManagementSystem.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping({"/categories"})
 public class CategoryController {
-
-    @Autowired
-    private ModelMapper modelMapper;
-
     @Autowired
     private CategoryService categoryService;
 
-
-    @GetMapping
-    public List<CategoryDTO> getAllCategories() {
-        return categoryService.fetchCategoryList();
+    public CategoryController() {
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CategoryDTO> findCategoryById(@PathVariable("id") UUID category_id) {
-        CategoryDTO categoryDTO = categoryService.findCategoryById(category_id);
-        return ResponseEntity.ok().body(categoryDTO);
+    @GetMapping({"/get"})
+    public List<Category> getAllCategories() {
+        return this.categoryService.fetchCategoryList();
     }
 
-    @PostMapping
-    public ResponseEntity<CategoryDTO> saveCategory(@RequestBody CategoryDTO categoryDTO) {
-        boolean isCreated = categoryService.saveCategory(categoryDTO);
-        if (isCreated) {
-            return new ResponseEntity<>(categoryDTO, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @GetMapping({"/get/{category_id}"})
+    public ResponseEntity<Category> findCategoryById(@PathVariable("category_id") UUID category_id) {
+        Category category = this.categoryService.findCategoryById(category_id);
+        return ResponseEntity.ok().body(category);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategoryById(@PathVariable("id") UUID category_id, @RequestBody CategoryDTO categoryDTO) {
-        boolean isUpdated = categoryService.updateCategoryById(category_id, categoryDTO);
-        if (isUpdated) {
-            return ResponseEntity.ok().body(categoryDTO);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping({"/save"})
+    public ResponseEntity<Category> saveCategory(@RequestBody Category category) {
+        Category savedCategory = this.categoryService.saveCategory(category);
+        return new ResponseEntity(savedCategory, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategoryById(@PathVariable("id") UUID category_id) {
-        boolean isDeleted = categoryService.deleteCategoryById(category_id);
-        if (isDeleted) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PutMapping({"/update/{category_id}"})
+    public ResponseEntity<Category> updateCategoryById(@PathVariable("category_id") UUID category_id, @RequestBody Category category) {
+        Category updatedCategory = this.categoryService.updateCategoryById(category_id, category);
+        return ResponseEntity.ok().body(updatedCategory);
+    }
+
+    @DeleteMapping({"/delete/{category_id}"})
+    public ResponseEntity<Void> deleteCategoryById(@PathVariable("category_id") UUID category_id) {
+        this.categoryService.deleteCategoryById(category_id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

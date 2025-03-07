@@ -1,23 +1,24 @@
 package org.project.InventoryManagementSystem.controller;
 
-import org.modelmapper.ModelMapper;
-import org.project.InventoryManagementSystem.dto.ProductDTO;
+import java.util.List;
+import java.util.UUID;
+import org.project.InventoryManagementSystem.entity.Product;
 import org.project.InventoryManagementSystem.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping({"/products"})
 public class ProductController {
-
-    @Autowired
-    private ModelMapper modelMapper;
-
     @Autowired
     private ProductService productService;
 
@@ -25,44 +26,32 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping
-    public List<ProductDTO> fetchProductList() {
-        return productService.fetchProductList();
+    @GetMapping({"/get"})
+    public List<Product> fetchProductList() {
+        return this.productService.fetchProductList();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable("id") UUID product_id) {
-        ProductDTO productDTO = productService.getProductById(product_id);
-        return ResponseEntity.ok().body(productDTO);
+    @GetMapping({"/get/{product_id}"})
+    public ResponseEntity<Product> getProductById(@PathVariable("product_id") UUID product_id) {
+        Product product = this.productService.getProductById(product_id);
+        return ResponseEntity.ok().body(product);
     }
 
-    @PostMapping
-    public ResponseEntity<ProductDTO> saveProduct(@RequestBody ProductDTO productDTO) {
-        boolean isCreated = productService.saveProduct(productDTO);
-        if (isCreated) {
-            return new ResponseEntity<>(productDTO, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping({"/save"})
+    public ResponseEntity<Product> saveProduct(@RequestBody Product product) {
+        Product savedProduct = this.productService.saveProduct(product);
+        return new ResponseEntity(savedProduct, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable("id") UUID product_id, @RequestBody ProductDTO productDTO) {
-        boolean isUpdated = productService.updateProduct(product_id, productDTO);
-        if (isUpdated) {
-            return ResponseEntity.ok().body(productDTO);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PutMapping({"/update/{product_id}"})
+    public ResponseEntity<Product> updateProduct(@PathVariable("product_id") UUID product_id, @RequestBody Product product) {
+        Product updatedProduct = this.productService.updateProduct(product_id, product);
+        return ResponseEntity.ok().body(updatedProduct);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProductById(@PathVariable("id") UUID product_id) {
-        boolean isDeleted = productService.deleteProductById(product_id);
-        if (isDeleted) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @DeleteMapping({"/delete/{product_id}"})
+    public ResponseEntity<Void> deleteProductById(@PathVariable("product_id") UUID product_id) {
+        this.productService.deleteProductById(product_id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }
