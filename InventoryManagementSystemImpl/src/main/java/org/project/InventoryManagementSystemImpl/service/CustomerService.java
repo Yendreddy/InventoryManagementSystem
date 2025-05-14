@@ -1,7 +1,6 @@
 package org.project.InventoryManagementSystemImpl.service;
 
 import org.project.InventoryManagementSystemImpl.entity.Customer;
-
 import java.util.List;
 import java.util.UUID;
 

@@ -1,5 +1,6 @@
 package org.project.InventoryManagementSystemImpl.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,5 +39,6 @@ public class Customer {
             fetch = FetchType.EAGER
 
     )
+    @JsonIgnore
     private List<OrdersPlaced> ordersPlaceds;
 }
